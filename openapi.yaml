@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: Spaced Repetition API
+  description: API for managing spaced repetition triggers and daily reviews.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Main API Server
+paths:
+  /triggers:
+    post:
+      summary: Create a new trigger
+      description: Creates a new trigger and automatically schedules its 4 fixed reviews (D+1, D+7, D+30, D+180).
+      tags:
+        - Triggers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerCreateRequest'
+      responses:
+        '201':
+          description: Trigger created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerCreateResponse'
+  /reviews/today:
+    get:
+      summary: Get today's pending reviews
+      description: Retrieves all pending reviews scheduled for today or earlier.
+      tags:
+        - Reviews
+      responses:
+        '200':
+          description: List of pending reviews
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewsTodayResponse'
+  /reviews/{id}/evaluate:
+    post:
+      summary: Evaluate a review
+      description: Submits the user's result (REMEMBERED or FORGOTTEN) for a specific review.
+      tags:
+        - Reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the review being evaluated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewEvaluateRequest'
+      responses:
+        '200':
+          description: Review evaluated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewEvaluateResponse'
+components:
+  schemas:
+    TriggerCreateRequest:
+      type: object
+      required:
+        - subject_id
+        - title
+      properties:
+        subject_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        title:
+          type: string
+          example: "Idempotência"
+        notes:
+          type: string
+          example: "Garantir o mesmo resultado independentemente de quantas vezes a operação for executada. Essencial em retentativas de APIs."
+    TriggerCreateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "710b962e-041c-11e1-9234-0123456789ab"
+        title:
+          type: string
+          example: "Idempotência"
+        created_reviews_count:
+          type: integer
+          example: 4
+    ReviewsTodayResponse:
+      type: object
+      properties:
+        total_pending:
+          type: integer
+          example: 2
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewItem'
+    ReviewItem:
+      type: object
+      properties:
+        review_id:
+          type: string
+          format: uuid
+        trigger_id:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+          example: "Arquitetura de Microsserviços"
+        trigger_title:
+          type: string
+          example: "Idempotência"
+        notes:
+          type: string
+          example: "Garantir o mesmo resultado independentemente de quantas vezes a operação for executada."
+        interval_days:
+          type: integer
+          example: 1
+    ReviewEvaluateRequest:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: string
+          enum:
+            - REMEMBERED
+            - FORGOTTEN
+          example: "REMEMBERED"
+    ReviewEvaluateResponse:
+      type: object
+      properties:
+        review_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          example: "COMPLETED"
+        next_review_date:
+          type: string
+          format: date
+          example: "2026-08-26"

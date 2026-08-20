@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>revisa — protótipo</title>
+  <style>
+    :root { color-scheme: light dark; --ink: #17241f; --muted: #527265; --canvas: #edf5ef; --surface: #ffffff; --line: #dce8e1; --brand: #166b49; --brand-soft: #d7f0e1; --warm: #e3aa39; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--canvas); color: var(--ink); }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .app { width: min(100%, 470px); min-height: 100vh; margin: auto; background: var(--surface); display: flex; flex-direction: column; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 24px 24px 12px; }
+    .brand { font-size: 22px; font-weight: 650; letter-spacing: -.05em; }
+    .profile { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--brand-soft); color: var(--brand); font-size: 14px; font-weight: 600; }
+    main { flex: 1; padding: 16px 24px 24px; }
+    .view { display: none; animation: enter .2s ease-out; }
+    .view.active { display: block; }
+    @keyframes enter { from { opacity: .2; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .eyebrow, .metadata { margin: 0; color: var(--muted); font-size: 13px; }
+    h1 { margin: 5px 0 22px; font-size: 29px; line-height: 1.08; letter-spacing: -.055em; font-weight: 650; }
+    .progress-copy { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+    .progress { height: 7px; margin-bottom: 23px; overflow: hidden; background: #dfeae3; border-radius: 99px; }
+    .progress > span { display: block; height: 100%; border-radius: inherit; background: var(--brand); transition: width .25s ease; }
+    .review-list { display: grid; gap: 10px; }
+    .review-item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 15px; text-align: left; color: inherit; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+    .review-item:hover { border-color: var(--brand); }
+    .dot { flex: 0 0 10px; width: 10px; height: 10px; border-radius: 50%; background: var(--warm); }
+    .review-item strong { display: block; font-weight: 600; }
+    .review-item small { display: block; margin-top: 3px; color: var(--muted); }
+    .interval { margin-left: auto; color: var(--muted); font-size: 13px; }
+    .primary, .secondary { width: 100%; padding: 14px 16px; border: 1px solid transparent; border-radius: 14px; font-weight: 650; }
+    .primary { margin-top: 22px; background: var(--brand); color: white; }
+    .primary:hover { filter: brightness(.94); }
+    .secondary { margin-top: 14px; background: transparent; color: var(--ink); border-color: var(--line); }
+    .focus-card { min-height: 275px; padding: 25px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); box-shadow: 0 8px 24px rgba(24, 51, 38, .06); }
+    .subject { color: var(--brand); font-size: 13px; font-weight: 650; }
+    .trigger { margin: 72px 0 10px; font-size: 37px; line-height: 1; letter-spacing: -.06em; font-weight: 650; }
+    .hint { margin: 0; color: var(--muted); line-height: 1.5; }
+    .notes-frame { position: relative; margin-top: 24px; padding: 17px 42px 17px 17px; background: var(--brand-soft); border-radius: 14px; }
+    .notes { margin: 0; color: var(--ink); line-height: 1.5; }
+    .close-notes { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; color: var(--brand); background: transparent; font-size: 24px; line-height: 1; }
+    .close-notes:hover { background: rgba(22, 107, 73, .12); }
+    .answer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .answer-row button { padding: 14px 10px; border-radius: 14px; font-weight: 650; }
+    .forgot { border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+    .remember { border: 1px solid var(--brand); color: white; background: var(--brand); }
+    .empty { padding: 42px 10px; text-align: center; }
+    .empty .check { width: 54px; height: 54px; margin: auto; display: grid; place-items: center; border-radius: 50%; background: var(--brand-soft); color: var(--brand); font-size: 24px; }
+    .empty p { color: var(--muted); }
+    label { display: block; margin: 18px 0 7px; font-size: 14px; font-weight: 650; }
+    input, select, textarea { width: 100%; padding: 12px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+    textarea { height: 100px; resize: vertical; }
+    .field-help { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .bottom-nav { display: flex; justify-content: space-around; gap: 4px; padding: 11px 14px 17px; border-top: 1px solid var(--line); background: var(--surface); }
+    .bottom-nav button { flex: 1; padding: 8px 3px; color: var(--muted); background: transparent; border: 0; border-radius: 10px; font-size: 12px; }
+    .bottom-nav button.active { color: var(--brand); font-weight: 700; }
+    .toast { position: fixed; left: 50%; bottom: 78px; max-width: calc(100% - 32px); padding: 11px 15px; transform: translate(-50%, 20px); opacity: 0; color: white; background: #17241f; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.18); transition: .2s ease; pointer-events: none; }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    @media (prefers-color-scheme: dark) { :root { --ink:#e8f4ed; --muted:#a4c6b6; --canvas:#0d1410; --surface:#17231d; --line:#304339; --brand:#7ed7ae; --brand-soft:#245a40; } .progress { background:#26362e; } .primary, .remember { color:#10251a; } .toast { background:#e8f4ed; color:#17241f; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar"><div class="brand">revisa</div><div class="profile" aria-label="Perfil de Bruno">B</div></header>
+    <main>
+      <section class="view active" id="today-view" aria-labelledby="today-title">
+        <p class="eyebrow" id="today-date"></p><h1 id="today-title">Sua revisão de hoje</h1>
+        <div class="progress-copy"><span id="progress-label">0 de 0 concluídas</span><span id="progress-percent">0%</span></div><div class="progress" role="progressbar" aria-labelledby="progress-label" aria-valuemin="0" aria-valuemax="100"><span id="progress-bar"></span></div>
+        <div id="review-list" class="review-list"></div>
+        <div id="empty-state" class="empty" hidden><div class="check">✓</div><h1>Por hoje é só</h1><p>Você concluiu todas as revisões pendentes.</p><button class="secondary" id="restore-demo" type="button">Restaurar exemplo</button></div>
+        <button class="primary" id="start-review" type="button">Começar revisão</button>
+      </section>
+      <section class="view" id="focus-view" aria-labelledby="focus-title">
+        <p class="eyebrow" id="focus-step">Revisão 1 de 1</p><h1 id="focus-title">Evocar antes de revelar</h1>
+        <div class="progress-copy"><span id="focus-subject"></span><span id="focus-interval"></span></div><div class="progress"><span id="focus-bar"></span></div>
+        <article class="focus-card"><div class="subject">Gatilho</div><div class="trigger" id="focus-trigger"></div><p class="hint" id="focus-hint">O que este conceito significa para você?</p><div class="notes-frame" id="notes-frame" hidden><button class="close-notes" id="hide-notes" type="button" aria-label="Fechar anotação">×</button><p class="notes" id="focus-notes"></p></div></article>
+        <button class="primary" id="reveal" type="button">Revelar anotação</button>
+        <div id="revealed-actions" hidden><div class="answer-row" id="answers"><button class="forgot" data-result="FORGOTTEN" type="button">Esqueci</button><button class="remember" data-result="REMEMBERED" type="button">Lembrei</button></div></div>
+      </section>
+      <section class="view" id="new-view" aria-labelledby="new-title">
+        <p class="eyebrow">Dia 0</p><h1 id="new-title">Novo gatilho</h1>
+        <form id="trigger-form"><label for="subject-input">Matéria</label><input id="subject-input" name="subject" required value="Arquitetura de sistemas"><label for="title-input">Palavra-gatilho</label><input id="title-input" name="title" required placeholder="Ex.: Idempotência"><p class="field-help">Use um termo curto que faça você recuperar o conceito.</p><label for="notes-input">Anotação</label><textarea id="notes-input" name="notes" placeholder="Registre sua síntese do conceito."></textarea><button class="primary" type="submit">Salvar e agendar revisões</button></form>
+      </section>
+    </main>
+    <nav class="bottom-nav" aria-label="Navegação principal"><button data-view="today" class="active" type="button">Hoje</button><button data-view="new" type="button">Novo gatilho</button></nav>
+  </div>
+  <div class="toast" role="status" aria-live="polite" id="toast"></div>
+  <script>
+    const storageKey = 'revisa-state-v2';
+    const intervals = [1, 7, 30, 180];
+    const localDate = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const today = () => localDate(new Date());
+    const dateAfter = days => { const date = new Date(); date.setDate(date.getDate() + days); return localDate(date); };
+    const initialState = () => ({
+      triggers: [
+        { id: 'trigger-1', title: 'Idempotência', subject: 'Arquitetura de sistemas', notes: 'Uma operação idempotente produz o mesmo resultado mesmo quando é executada mais de uma vez — essencial em retentativas de APIs.' },
+        { id: 'trigger-2', title: 'Closure', subject: 'JavaScript', notes: 'Uma função que preserva acesso ao escopo léxico em que foi criada, mesmo quando executada fora dele.' },
+        { id: 'trigger-3', title: 'Função do pâncreas', subject: 'Biologia', notes: 'Produz hormônios que regulam a glicemia e enzimas que apoiam a digestão.' }
+      ],
+      reviews: [
+        { id: 'review-1', triggerId: 'trigger-1', interval: 7, scheduledFor: today(), status: 'PENDING' },
+        { id: 'review-2', triggerId: 'trigger-2', interval: 30, scheduledFor: today(), status: 'PENDING' },
+        { id: 'review-3', triggerId: 'trigger-3', interval: 1, scheduledFor: today(), status: 'PENDING' }
+      ]
+    });
+    let state = JSON.parse(localStorage.getItem(storageKey) || 'null') || initialState();
+    let currentReviewId = null;
+    const qs = selector => document.querySelector(selector);
+    const formatDate = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    qs('#today-date').textContent = formatDate.format(new Date()).replace(/^./, char => char.toUpperCase());
+    function save() { localStorage.setItem(storageKey, JSON.stringify(state)); }
+    function showToast(message) { const toast = qs('#toast'); toast.textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); }
+    function switchView(name) { document.querySelectorAll('.view').forEach(view => view.classList.toggle('active', view.id === name + '-view')); document.querySelectorAll('[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === name)); if (name === 'today') renderToday(); }
+    function dueReviews() { return state.reviews.filter(review => review.status === 'PENDING' && review.scheduledFor <= today()); }
+    function triggerFor(review) { return state.triggers.find(trigger => trigger.id === review.triggerId); }
+    function renderToday() { const list = qs('#review-list'); const pending = dueReviews(); const completedToday = state.reviews.filter(review => review.status === 'COMPLETED' && review.completedAt === today()).length; const total = pending.length + completedToday; const percent = total ? Math.round(completedToday / total * 100) : 100; list.innerHTML = ''; qs('#empty-state').hidden = pending.length !== 0; qs('#start-review').hidden = pending.length === 0; qs('#progress-label').textContent = `${completedToday} de ${total} concluídas`; qs('#progress-percent').textContent = `${percent}%`; qs('#progress-bar').style.width = `${percent}%`; pending.forEach((review, index) => { const trigger = triggerFor(review); const button = document.createElement('button'); button.className = 'review-item'; button.type = 'button'; button.innerHTML = `<span class="dot" aria-hidden="true"></span><span><strong>${trigger.title}</strong><small>${trigger.subject}</small></span><span class="interval">D+${review.interval}</span>`; button.addEventListener('click', () => startFocus(index)); list.appendChild(button); }); }
+    function startFocus(index = 0) { const pending = dueReviews(); if (!pending.length) return; const review = pending[index]; const trigger = triggerFor(review); currentReviewId = review.id; qs('#focus-step').textContent = `Revisão ${index + 1} de ${pending.length}`; qs('#focus-subject').textContent = trigger.subject; qs('#focus-interval').textContent = `D+${review.interval}`; qs('#focus-bar').style.width = `${Math.round(index / pending.length * 100)}%`; qs('#focus-trigger').textContent = trigger.title; qs('#focus-notes').textContent = trigger.notes || 'Sem anotação cadastrada.'; qs('#notes-frame').hidden = true; qs('#reveal').hidden = false; qs('#revealed-actions').hidden = true; switchView('focus'); }
+    qs('#start-review').addEventListener('click', () => startFocus());
+    qs('#reveal').addEventListener('click', () => { qs('#notes-frame').hidden = false; qs('#reveal').hidden = true; qs('#revealed-actions').hidden = false; });
+    qs('#hide-notes').addEventListener('click', () => { qs('#notes-frame').hidden = true; qs('#revealed-actions').hidden = true; qs('#reveal').hidden = false; });
+    qs('#answers').addEventListener('click', event => { const result = event.target.dataset.result; if (!result) return; const review = state.reviews.find(item => item.id === currentReviewId); if (!review) return; if (result === 'REMEMBERED') { review.status = 'COMPLETED'; review.completedAt = today(); } else { review.status = 'FAILED'; review.completedAt = today(); state.reviews.push({ id: crypto.randomUUID(), triggerId: review.triggerId, interval: 1, scheduledFor: dateAfter(1), status: 'PENDING', emergency: true }); } save(); showToast(result === 'REMEMBERED' ? 'Revisão concluída.' : 'Revisão reagendada para amanhã.'); if (dueReviews().length) startFocus(0); else switchView('today'); });
+    qs('#trigger-form').addEventListener('submit', event => { event.preventDefault(); const data = new FormData(event.currentTarget); const trigger = { id: crypto.randomUUID(), title: data.get('title').trim(), subject: data.get('subject').trim(), notes: data.get('notes').trim() }; state.triggers.push(trigger); intervals.forEach(interval => state.reviews.push({ id: crypto.randomUUID(), triggerId: trigger.id, interval, scheduledFor: dateAfter(interval), status: 'PENDING' })); save(); event.currentTarget.reset(); showToast('Gatilho salvo. Quatro revisões foram agendadas.'); switchView('today'); });
+    qs('#restore-demo').addEventListener('click', () => { state = initialState(); save(); renderToday(); });
+    document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => switchView(button.dataset.view)));
+    renderToday();
+  </script>
+</body>
+</html>
