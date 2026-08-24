@@ -24,20 +24,16 @@ public class ReviewService {
 
     @Transactional
     public ReviewEvaluateResult evaluateReview(UUID reviewId, EvaluateResult result) {
+
         var review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+        review.evaluate(result);
 
-        review.evaluate(result); // Aplica RN-02 ou RN-03[cite: 3]
         reviewRepository.save(review);
 
-        LocalDate nextReviewDate = null;
-
-        // RN-03: Agendamento emergencial para D+1 em caso de falha[cite: 3]
-        if (review.getStatus() == ReviewStatus.FAILED) {
-            nextReviewDate = LocalDate.now().plusDays(1);
-            var emergencyReview = new Review(review.getTriggerId(), 1, nextReviewDate);
-            reviewRepository.save(emergencyReview);
-        }
+        LocalDate nextReviewDate = review.getStatus() == ReviewStatus.PENDING
+                ? review.getScheduledFor()
+                : null;
 
         return new ReviewEvaluateResult(review.getId(), review.getStatus(), nextReviewDate);
     }

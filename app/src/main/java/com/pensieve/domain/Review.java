@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -27,10 +28,42 @@ public class Review {
     }
 
     public void evaluate(EvaluateResult result) {
-        this.completedAt = LocalDateTime.now();
-        switch (result) {
-            case REMEMBERED -> this.status = ReviewStatus.COMPLETED;
-            case FORGOTTEN -> this.status = ReviewStatus.FAILED;
+        Objects.requireNonNull(result, "Evaluation result is required");
+
+        if (status != ReviewStatus.PENDING) {
+            throw new IllegalStateException("Only pending reviews can be evaluated");
         }
+
+        switch (result) {
+            case REMEMBERED -> advanceToNextInterval();
+            case FORGOTTEN -> rescheduleForFirstInterval();
+        }
+    }
+
+    private void advanceToNextInterval() {
+        var nextInterval = switch (intervalDays) {
+            case 1 -> 7;
+            case 7 -> 30;
+            case 30 -> 180;
+            case 180 -> 0;
+            default -> throw new IllegalStateException("Unsupported review interval: " + intervalDays);
+        };
+
+        completedAt = LocalDateTime.now();
+
+        if (nextInterval == 0) {
+            status = ReviewStatus.COMPLETED;
+            return;
+        }
+
+        intervalDays = nextInterval;
+        scheduledFor = LocalDate.now().plusDays(nextInterval);
+    }
+
+    private void rescheduleForFirstInterval() {
+        intervalDays = 1;
+        scheduledFor = LocalDate.now().plusDays(1);
+        completedAt = LocalDateTime.now();
+        status = ReviewStatus.PENDING;
     }
 }
