@@ -44,7 +44,6 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<PendingReviewDto> getTodaysReviews(UUID userId) {
-        // RN-04: status = 'PENDING' e scheduled_for <= CURRENT_DATE[cite: 3]
-        return reviewRepository.findPendingReviews(userId, LocalDate.now());
+        return reviewRepository.findPendingReviews(userId);
     }
 }

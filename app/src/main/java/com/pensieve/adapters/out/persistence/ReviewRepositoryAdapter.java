@@ -35,7 +35,7 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
     }
 
     @Override
-    public List<PendingReviewDto> findPendingReviews(UUID userId, LocalDate date) {
-        return jpaRepository.findPendingReviewsWithDetails(date, ReviewStatus.COMPLETED, userId);
+    public List<PendingReviewDto> findPendingReviews(UUID userId) {
+        return jpaRepository.findPendingReviewsWithDetails(ReviewStatus.PENDING, userId);
     }
 }

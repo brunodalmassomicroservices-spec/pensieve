@@ -42,6 +42,7 @@ public class PensieveController {
     @ApiResponse(responseCode = "201", description = "Gatilho criado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos", content = @Content)
     public TriggerCreateResponse createTrigger(@RequestBody TriggerCreateRequest request) {
+
         var result = triggerService.createTrigger(
                 UUID.fromString(request.clientId()),
                 request.subject(),
@@ -66,6 +67,7 @@ public class PensieveController {
                     required = true,
                     schema = @Schema(format = "uuid"))
             @PathVariable UUID id) {
+
         var items = reviewService.getTodaysReviews(id);
         return new ReviewsTodayResponse(items.size(), items);
     }

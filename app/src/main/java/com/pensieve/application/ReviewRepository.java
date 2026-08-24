@@ -13,5 +13,5 @@ public interface ReviewRepository {
 
     Optional<Review> findById(UUID id);
 
-    List<PendingReviewDto> findPendingReviews(UUID userId, LocalDate date);
+    List<PendingReviewDto> findPendingReviews(UUID userId);
 }

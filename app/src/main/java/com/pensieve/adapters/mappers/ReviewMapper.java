@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 public record ReviewMapper(EntityManager entityManager) {
 
     public ReviewEntity toEntity(Review domain) {
+
         if (domain == null)
             return null;
 
