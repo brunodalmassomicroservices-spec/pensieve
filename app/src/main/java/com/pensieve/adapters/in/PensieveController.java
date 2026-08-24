@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,10 +42,10 @@ public class PensieveController {
             description = "Cria o gatilho e agenda automaticamente revisões para D+1, D+7, D+30 e D+180.")
     @ApiResponse(responseCode = "201", description = "Gatilho criado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos", content = @Content)
-    public TriggerCreateResponse createTrigger(@RequestBody TriggerCreateRequest request) {
+    public TriggerCreateResponse createTrigger(@AuthenticationPrincipal UUID userId, @RequestBody TriggerCreateRequest request) {
 
         var result = triggerService.createTrigger(
-                UUID.fromString(request.clientId()),
+                userId,
                 request.subject(),
                 request.title(),
                 request.notes()
@@ -56,19 +57,14 @@ public class PensieveController {
     public record ReviewsTodayResponse(int total_pending, List<PendingReviewDto> items) {
     }
 
-    @GetMapping("/reviews/{id}/today")
+    @GetMapping("/reviews/today")
     @Operation(
             summary = "Lista as revisões pendentes de hoje",
             description = "Retorna revisões agendadas para hoje ou para datas anteriores que ainda estejam pendentes.")
     @ApiResponse(responseCode = "200", description = "Revisões retornadas com sucesso")
-    public ReviewsTodayResponse getTodaysReviews(
-            @Parameter(
-                    description = "Identificador da revisão",
-                    required = true,
-                    schema = @Schema(format = "uuid"))
-            @PathVariable UUID id) {
+    public ReviewsTodayResponse getTodaysReviews(@AuthenticationPrincipal UUID userId) {
 
-        var items = reviewService.getTodaysReviews(id);
+        var items = reviewService.getTodaysReviews(userId);
         return new ReviewsTodayResponse(items.size(), items);
     }
 
@@ -83,10 +79,11 @@ public class PensieveController {
                     required = true,
                     schema = @Schema(format = "uuid"))
             @PathVariable UUID id,
+            @AuthenticationPrincipal UUID userId,
             @RequestBody ReviewEvaluateRequest request) {
 
         var evaluateResult = EvaluateResult.valueOf(request.result().toUpperCase()); // REMEMBERED ou FORGOTTEN[cite: 2]
-        var result = reviewService.evaluateReview(id, evaluateResult);
+        var result = reviewService.evaluateReview(userId, id, evaluateResult);
 
         return new ReviewEvaluateResponse(
                 result.reviewId(),

@@ -35,6 +35,11 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
     }
 
     @Override
+    public Optional<Review> findByIdAndUserId(UUID id, UUID userId) {
+        return jpaRepository.findByIdAndUserId(id, userId).map(mapper::toDomain);
+    }
+
+    @Override
     public List<PendingReviewDto> findPendingReviews(UUID userId) {
         return jpaRepository.findPendingReviewsWithDetails(ReviewStatus.PENDING, userId);
     }

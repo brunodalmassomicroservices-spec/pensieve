@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
@@ -28,4 +28,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
                  AND t.users.id = :user
             """)
     List<PendingReviewDto> findPendingReviewsWithDetails(@Param("status") ReviewStatus status, @Param("user") UUID user);
+
+    @Query("select r from ReviewEntity r join fetch r.trigger t join fetch t.users where r.id = :id and t.users.id = :userId")
+    Optional<ReviewEntity> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 }
