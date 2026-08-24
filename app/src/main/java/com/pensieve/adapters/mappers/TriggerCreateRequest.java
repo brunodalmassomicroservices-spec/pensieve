@@ -1,6 +1,8 @@
 package com.pensieve.adapters.mappers;
 
-import java.util.UUID;
-
-public record TriggerCreateRequest(UUID subject_id, String title, String notes) {
+public record TriggerCreateRequest(
+        String clientId,
+        String subject,
+        String title,
+        String notes) {
 }

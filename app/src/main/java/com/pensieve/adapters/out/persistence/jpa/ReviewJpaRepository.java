@@ -14,9 +14,10 @@ import java.util.UUID;
 public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
     @Query("""
                 SELECT new com.pensieve.application.records.PendingReviewDto(
-                    r.id, t.id, s.title, t.title, t.notes, r.intervalDays
+                    r.id, t.id, t.title, t.title, t.notes, r.intervalDays
                 ) 
-                FROM ReviewEntity r JOIN r.trigger t JOIN t.subject s 
+                FROM ReviewEntity r 
+                            JOIN r.trigger t  
                 WHERE r.status = :status AND r.scheduledFor <= :date
             """)
     List<PendingReviewDto> findPendingReviewsWithDetails(@Param("date") LocalDate date, @Param("status") ReviewStatus status);

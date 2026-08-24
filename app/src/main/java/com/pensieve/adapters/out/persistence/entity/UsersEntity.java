@@ -10,16 +10,15 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "subjects")
+@Table(name = "users")
 @Getter
 @Setter
-public class SubjectEntity {
+public class UsersEntity {
 
     @Id
     private UUID id;
-    private UUID userId;
-    private String title;
-    private String colorHex;
-    private LocalDateTime createdAt;
+    private String name;
+    private String email;
+    private String password;
 
 }

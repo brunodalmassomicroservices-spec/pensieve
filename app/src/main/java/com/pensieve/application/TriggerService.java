@@ -22,8 +22,9 @@ public class TriggerService {
     }
 
     @Transactional
-    public TriggerCreateResult createTrigger(UUID subjectId, String title, String notes) {
-        var trigger = new Trigger(subjectId, title, notes);
+    public TriggerCreateResult createTrigger(UUID clientId, String subject, String title, String notes) {
+
+        var trigger = new Trigger(clientId, subject, title, notes);
         triggerRepository.save(trigger);
 
         // RN-01 e ADR-001: Agendamento fixo para 1, 7, 30 e 180 dias[cite: 1, 3]
@@ -36,6 +37,6 @@ public class TriggerService {
 
         reviewRepository.saveAll(reviews);
 
-        return new TriggerCreateResult(trigger.getId(), trigger.getTitle(), reviews.size());
+        return new TriggerCreateResult(trigger.getId(), trigger.getClientId(), trigger.getSubject(), trigger.getTitle(), reviews.size());
     }
 }

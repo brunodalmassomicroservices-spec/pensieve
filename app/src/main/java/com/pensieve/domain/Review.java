@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Getter
 public class Review {
+
     private UUID id;
     private UUID triggerId;
     private int intervalDays;

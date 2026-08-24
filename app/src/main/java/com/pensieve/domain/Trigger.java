@@ -8,14 +8,16 @@ import java.util.UUID;
 @Getter
 public class Trigger {
     private UUID id;
-    private UUID subjectId;
+    private UUID clientId;
+    private String subject;
     private String title;
     private String notes;
     private LocalDateTime createdAt;
 
-    public Trigger(UUID subjectId, String title, String notes) {
+    public Trigger(UUID clientId, String subject, String title, String notes) {
         this.id = UUID.randomUUID();
-        this.subjectId = subjectId;
+        this.clientId = clientId;
+        this.subject = subject;
         this.title = title;
         this.notes = notes;
         this.createdAt = LocalDateTime.now();

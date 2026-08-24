@@ -43,14 +43,17 @@ public class PensieveController {
     @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos", content = @Content)
     public TriggerCreateResponse createTrigger(@RequestBody TriggerCreateRequest request) {
         var result = triggerService.createTrigger(
-                request.subject_id(),
+                UUID.fromString(request.clientId()),
+                request.subject(),
                 request.title(),
                 request.notes()
         );
-        return new TriggerCreateResponse(result.id(), result.title(), result.createdReviewsCount());
+
+        return new TriggerCreateResponse(result.id(), result.userId(), result.subject(), result.title(), result.createdReviewsCount());
     }
 
-    public record ReviewsTodayResponse(int total_pending, List<PendingReviewDto> items) {}
+    public record ReviewsTodayResponse(int total_pending, List<PendingReviewDto> items) {
+    }
 
     @GetMapping("/reviews/today")
     @Operation(

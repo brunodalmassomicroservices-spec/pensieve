@@ -13,11 +13,13 @@ import java.util.UUID;
 @Setter
 public class TriggerEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id")
-    private SubjectEntity subject;
+    @JoinColumn(name = "user_id")
+    private UsersEntity users;
+
+    private String subject;
     private String title;
     private String notes;
     private LocalDateTime createdAt;
