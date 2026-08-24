@@ -24,9 +24,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewEvaluateResult evaluateReview(UUID userId, UUID reviewId, EvaluateResult result) {
+    public ReviewEvaluateResult evaluateReview(UUID reviewId, EvaluateResult result) {
 
-        var review = reviewRepository.findByIdAndUserId(reviewId, userId)
+        var review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found"));
         review.evaluate(result);
 

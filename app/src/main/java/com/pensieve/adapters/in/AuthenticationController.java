@@ -9,7 +9,6 @@ import com.pensieve.application.impl.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Autenticação", description = "Login e encerramento de sessão.")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
-    private final TokenService tokenService;
     private final UserService userService;
 
-    public AuthenticationController(AuthenticationService authenticationService, TokenService tokenService, UserService userService) {
+    public AuthenticationController(AuthenticationService authenticationService, UserService userService) {
         this.authenticationService = authenticationService;
-        this.tokenService = tokenService;
         this.userService = userService;
     }
 
@@ -38,16 +35,7 @@ public class AuthenticationController {
     @Operation(summary = "Autentica um usuário")
     @ApiResponse(responseCode = "200", description = "Login efetuado")
     public AuthResponse login(@RequestBody LoginRequest request) {
-        return authenticationService.login(request.email(), request.password());
+        return authenticationService.login(request);
     }
 
-    @PostMapping("/logout")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Encerra a sessão atual")
-    public void logout(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            tokenService.revoke(header.substring(7).trim());
-        }
-    }
 }
