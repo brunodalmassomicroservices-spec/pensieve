@@ -6,6 +6,7 @@ import com.pensieve.application.ReviewRepository;
 import com.pensieve.application.records.PendingReviewDto;
 import com.pensieve.domain.Review;
 import com.pensieve.domain.ReviewStatus;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -41,8 +42,7 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
     }
 
     @Override
-//    @Timed(value = "db.reviews.find_pending", description = "Tempo da query de revisões")
-    public List<PendingReviewDto> findPendingReviews(LocalDate date) {
-        return jpaRepository.findPendingReviewsWithDetails(date, ReviewStatus.PENDING);
+    public List<PendingReviewDto> findPendingReviews(UUID userId, LocalDate date) {
+        return jpaRepository.findPendingReviewsWithDetails(date, ReviewStatus.PENDING, userId);
     }
 }

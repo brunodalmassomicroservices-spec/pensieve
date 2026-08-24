@@ -1,6 +1,8 @@
-package com.pensieve.application;
+package com.pensieve.application.impl;
 
 import com.pensieve.adapters.mappers.TriggerCreateResult;
+import com.pensieve.application.ReviewRepository;
+import com.pensieve.application.TriggerRepository;
 import com.pensieve.domain.Review;
 import com.pensieve.domain.Trigger;
 import org.springframework.stereotype.Service;

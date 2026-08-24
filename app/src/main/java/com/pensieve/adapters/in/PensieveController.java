@@ -5,8 +5,8 @@ import com.pensieve.adapters.mappers.ReviewEvaluateRequest;
 import com.pensieve.adapters.mappers.ReviewEvaluateResponse;
 import com.pensieve.adapters.mappers.TriggerCreateRequest;
 import com.pensieve.adapters.mappers.TriggerCreateResponse;
-import com.pensieve.application.ReviewService;
-import com.pensieve.application.TriggerService;
+import com.pensieve.application.impl.ReviewService;
+import com.pensieve.application.impl.TriggerService;
 import com.pensieve.application.records.PendingReviewDto;
 import com.pensieve.domain.EvaluateResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,14 +55,19 @@ public class PensieveController {
     public record ReviewsTodayResponse(int total_pending, List<PendingReviewDto> items) {
     }
 
-    @GetMapping("/reviews/today")
+    @GetMapping("/reviews/{id}/today")
     @Operation(
             summary = "Lista as revisões pendentes de hoje",
             description = "Retorna revisões agendadas para hoje ou para datas anteriores que ainda estejam pendentes.")
     @ApiResponse(responseCode = "200", description = "Revisões retornadas com sucesso")
-    public ReviewsTodayResponse getTodaysReviews() {
-        var items = reviewService.getTodaysReviews();
-        return new ReviewsTodayResponse(items.size(), items); // Retorna a lista e o total[cite: 2]
+    public ReviewsTodayResponse getTodaysReviews(
+            @Parameter(
+                    description = "Identificador da revisão",
+                    required = true,
+                    schema = @Schema(format = "uuid"))
+            @PathVariable UUID id) {
+        var items = reviewService.getTodaysReviews(id);
+        return new ReviewsTodayResponse(items.size(), items);
     }
 
     @PostMapping("/reviews/{id}/evaluate")
@@ -71,8 +76,11 @@ public class PensieveController {
     @ApiResponse(responseCode = "400", description = "Resultado de avaliação inválido", content = @Content)
     @ApiResponse(responseCode = "404", description = "Revisão não encontrada", content = @Content)
     public ReviewEvaluateResponse evaluateReview(
-            @Parameter(description = "Identificador da revisão", required = true,
-                    schema = @Schema(format = "uuid")) @PathVariable UUID id,
+            @Parameter(
+                    description = "Identificador da revisão",
+                    required = true,
+                    schema = @Schema(format = "uuid"))
+            @PathVariable UUID id,
             @RequestBody ReviewEvaluateRequest request) {
 
         var evaluateResult = EvaluateResult.valueOf(request.result().toUpperCase()); // REMEMBERED ou FORGOTTEN[cite: 2]

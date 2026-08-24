@@ -1,6 +1,7 @@
-package com.pensieve.application;
+package com.pensieve.application.impl;
 
 import com.pensieve.adapters.mappers.ReviewEvaluateResult;
+import com.pensieve.application.ReviewRepository;
 import com.pensieve.application.records.PendingReviewDto;
 import com.pensieve.domain.EvaluateResult;
 import com.pensieve.domain.Review;
@@ -42,8 +43,8 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<PendingReviewDto> getTodaysReviews() {
+    public List<PendingReviewDto> getTodaysReviews(UUID userId) {
         // RN-04: status = 'PENDING' e scheduled_for <= CURRENT_DATE[cite: 3]
-        return reviewRepository.findPendingReviews(LocalDate.now());
+        return reviewRepository.findPendingReviews(userId, LocalDate.now());
     }
 }

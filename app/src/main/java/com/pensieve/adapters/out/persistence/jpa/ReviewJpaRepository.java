@@ -17,8 +17,10 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
                     r.id, t.id, t.title, t.title, t.notes, r.intervalDays
                 ) 
                 FROM ReviewEntity r 
-                            JOIN r.trigger t  
-                WHERE r.status = :status AND r.scheduledFor <= :date
+                JOIN r.trigger t
+               WHERE r.status = :status 
+                 AND r.scheduledFor <= :date
+                 AND t.users.id = :user
             """)
-    List<PendingReviewDto> findPendingReviewsWithDetails(@Param("date") LocalDate date, @Param("status") ReviewStatus status);
+    List<PendingReviewDto> findPendingReviewsWithDetails(@Param("date") LocalDate date, @Param("status") ReviewStatus status, @Param("user") UUID user);
 }
