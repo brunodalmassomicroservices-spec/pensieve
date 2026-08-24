@@ -10,8 +10,11 @@ import java.lang.reflect.Field;
 
 @Component
 public record ReviewMapper(EntityManager entityManager) {
+
     public ReviewEntity toEntity(Review domain) {
-        if (domain == null) return null;
+        if (domain == null)
+            return null;
+
         var entity = new ReviewEntity();
         entity.setId(domain.getId());
         entity.setTrigger(entityManager.getReference(TriggerEntity.class, domain.getTriggerId()));

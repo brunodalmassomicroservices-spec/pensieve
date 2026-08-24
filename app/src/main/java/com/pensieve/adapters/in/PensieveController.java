@@ -49,7 +49,7 @@ public class PensieveController {
                 request.notes()
         );
 
-        return new TriggerCreateResponse(result.id(), result.userId(), result.subject(), result.title(), result.createdReviewsCount());
+        return new TriggerCreateResponse(result.id(), result.userId(), result.subject(), result.title());
     }
 
     public record ReviewsTodayResponse(int total_pending, List<PendingReviewDto> items) {

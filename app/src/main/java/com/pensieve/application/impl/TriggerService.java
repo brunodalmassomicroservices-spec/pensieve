@@ -29,16 +29,9 @@ public class TriggerService {
         var trigger = new Trigger(clientId, subject, title, notes);
         triggerRepository.save(trigger);
 
-        // RN-01 e ADR-001: Agendamento fixo para 1, 7, 30 e 180 dias[cite: 1, 3]
-        var intervals = List.of(1, 7, 30, 180);
-        var today = LocalDate.now();
+        var review = new Review(trigger.getId(), 1, LocalDate.now().plusDays(1));
+        reviewRepository.save(review);
 
-        var reviews = intervals.stream()
-                .map(interval -> new Review(trigger.getId(), interval, today.plusDays(interval)))
-                .toList();
-
-        reviewRepository.saveAll(reviews);
-
-        return new TriggerCreateResult(trigger.getId(), trigger.getClientId(), trigger.getSubject(), trigger.getTitle(), reviews.size());
+        return new TriggerCreateResult(trigger.getId(), trigger.getClientId(), trigger.getSubject(), trigger.getTitle());
     }
 }

@@ -18,7 +18,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
                 ) 
                 FROM ReviewEntity r 
                 JOIN r.trigger t
-               WHERE r.status = :status 
+               WHERE r.status <> :status 
                  AND r.scheduledFor <= :date
                  AND t.users.id = :user
             """)

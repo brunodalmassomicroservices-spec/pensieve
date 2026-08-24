@@ -1,5 +1,11 @@
 package com.pensieve.domain;
 
 public enum ReviewStatus {
-    PENDING, COMPLETED, FAILED, SKIPPED
+    PENDING_1,
+    PENDING_7,
+    PENDING_30,
+    PENDING_180,
+    COMPLETED,
+    FAILED,
+    SKIPPED
 }

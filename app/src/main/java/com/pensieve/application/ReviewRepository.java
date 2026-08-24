@@ -11,8 +11,6 @@ import java.util.UUID;
 public interface ReviewRepository {
     void save(Review review);
 
-    void saveAll(List<Review> reviews);
-
     Optional<Review> findById(UUID id);
 
     List<PendingReviewDto> findPendingReviews(UUID userId, LocalDate date);

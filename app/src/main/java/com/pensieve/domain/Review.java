@@ -22,7 +22,7 @@ public class Review {
         this.triggerId = triggerId;
         this.intervalDays = intervalDays;
         this.scheduledFor = scheduledFor;
-        this.status = ReviewStatus.PENDING;
+        this.status = ReviewStatus.PENDING_1;
         this.createdAt = LocalDateTime.now();
     }
 

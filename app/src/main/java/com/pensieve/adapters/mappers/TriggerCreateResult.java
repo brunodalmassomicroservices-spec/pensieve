@@ -6,6 +6,5 @@ public record TriggerCreateResult(
         UUID id,
         UUID userId,
         String subject,
-        String title,
-        int createdReviewsCount) {
+        String title) {
 }

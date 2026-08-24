@@ -6,6 +6,5 @@ public record TriggerCreateResponse(
         UUID id,
         UUID userId,
         String subject,
-        String title,
-        int created_reviews_count) {
+        String title) {
 }
