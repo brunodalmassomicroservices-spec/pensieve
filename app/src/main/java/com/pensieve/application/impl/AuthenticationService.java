@@ -32,7 +32,7 @@ public class AuthenticationService {
         }
 
         // Gera o token de forma stateless e retorna diretamente ao front-end
-        String token = tokenProvider.generateToken(user.getEmail());
+        String token = tokenProvider.generateToken(user.getEmail(), user.getId());
 
         return new AuthResponse(token, "Bearer", user.getId(), user.getName(), user.getEmail());
     }

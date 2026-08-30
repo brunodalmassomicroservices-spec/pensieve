@@ -24,8 +24,10 @@ public class UserService {
     private final ReviewJpaRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UsersJpaRepository usersRepository, TriggerJpaRepository triggerRepository,
-                       ReviewJpaRepository reviewRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UsersJpaRepository usersRepository,
+                       TriggerJpaRepository triggerRepository,
+                       ReviewJpaRepository reviewRepository,
+                       PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
         this.triggerRepository = triggerRepository;
         this.reviewRepository = reviewRepository;
@@ -52,17 +54,13 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse update(UUID id, String name, String email, String password) {
+    public UserResponse update(UUID id, String name, String password) {
         var user = findUser(id);
-        var normalizedEmail = normalizeEmail(email);
         validateName(name);
 
-        if (!user.getEmail().equals(normalizedEmail) && usersRepository.existsByEmail(normalizedEmail)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
-        }
-
         user.setName(name.trim());
-        user.setEmail(normalizedEmail);
+        user.setEmail(user.getEmail());
+
         if (password != null && !password.isBlank()) {
             user.setPassword(passwordEncoder.encode(password));
         }
