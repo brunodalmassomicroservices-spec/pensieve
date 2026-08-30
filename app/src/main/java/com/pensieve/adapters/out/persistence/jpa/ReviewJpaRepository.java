@@ -22,10 +22,11 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
                 SELECT new com.pensieve.application.records.PendingReviewDto(
                     r.id, t.id, t.title, t.title, t.notes, r.intervalDays
                 ) 
-                FROM ReviewEntity r 
-                JOIN r.trigger t
-               WHERE r.status = :status
-                 AND t.users.id = :user
+                 FROM ReviewEntity r 
+                 JOIN r.trigger t
+                WHERE r.status = :status
+                  AND t.users.id = :user
+             ORDER BY r.intervalDays
             """)
     List<PendingReviewDto> findPendingReviewsWithDetails(@Param("status") ReviewStatus status, @Param("user") UUID user);
 
